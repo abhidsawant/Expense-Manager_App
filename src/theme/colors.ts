@@ -1,0 +1,71 @@
+export const palette = {
+  // Gen-Z gradient purples + neons
+  purple900: '#0D0014',
+  purple800: '#1A0033',
+  purple700: '#2D0057',
+  purple600: '#4B0082',
+  purple500: '#7B2FBE',
+  purple400: '#A855F7',
+  purple300: '#C084FC',
+  purple200: '#E9D5FF',
+
+  pink500: '#EC4899',
+  pink400: '#F472B6',
+  cyan400: '#22D3EE',
+  cyan300: '#67E8F9',
+  green400: '#4ADE80',
+  green300: '#86EFAC',
+  yellow400: '#FACC15',
+  red400: '#F87171',
+  red500: '#EF4444',
+
+  white: '#FFFFFF',
+  black: '#000000',
+  gray900: '#111827',
+  gray800: '#1F2937',
+  gray700: '#374151',
+  gray600: '#4B5563',
+  gray500: '#6B7280',
+  gray400: '#9CA3AF',
+  gray300: '#D1D5DB',
+  gray200: '#E5E7EB',
+  gray100: '#F3F4F6',
+};
+
+export const lightTheme = {
+  bg: palette.white,
+  bgSecondary: palette.gray100,
+  bgCard: palette.white,
+  surface: palette.gray200,
+  border: palette.gray300,
+  text: palette.gray900,
+  textSecondary: palette.gray500,
+  textMuted: palette.gray400,
+  primary: palette.purple500,
+  primaryLight: palette.purple200,
+  accent: palette.pink500,
+  success: palette.green400,
+  danger: palette.red500,
+  tabBar: palette.white,
+  tabBarBorder: palette.gray200,
+};
+
+export const darkTheme = {
+  bg: palette.purple900,
+  bgSecondary: palette.purple800,
+  bgCard: '#1C0035',
+  surface: palette.purple700,
+  border: '#3D0070',
+  text: palette.white,
+  textSecondary: palette.purple300,
+  textMuted: palette.purple400,
+  primary: palette.purple400,
+  primaryLight: palette.purple700,
+  accent: palette.pink400,
+  success: palette.green300,
+  danger: palette.red400,
+  tabBar: '#0D0014',
+  tabBarBorder: '#2D0057',
+};
+
+export type AppTheme = typeof darkTheme;
