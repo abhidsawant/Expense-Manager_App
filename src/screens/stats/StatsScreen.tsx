@@ -1,9 +1,9 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { ExpensesContext } from '../../state/ExpensesContext';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { SettingsContext } from '../../state/ThemeContext';
@@ -15,14 +15,11 @@ export default function StatsScreen() {
   const { categories } = useContext(CategoriesContext);
   const { settings } = useContext(SettingsContext);
   const theme = useTheme();
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   function shiftMonth(dir: 1 | -1) {
-    setSelectedDate(prev => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() + dir);
-      return d;
-    });
+    setSelectedDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + dir); return d; });
   }
 
   const { total, byCat } = useMemo(() => {
@@ -43,17 +40,14 @@ export default function StatsScreen() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={['top']}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]}>Stats</Text>
+        <Text style={[styles.title, { color: theme.text }]}>{t('stats.title')}</Text>
       </View>
 
-      {/* Month switcher */}
       <View style={[styles.monthRow, { backgroundColor: theme.surface }]}>
         <Pressable onPress={() => shiftMonth(-1)} style={styles.arrowBtn}>
           <Ionicons name="chevron-back" size={22} color={theme.primary} />
         </Pressable>
-        <Text style={[styles.monthLabel, { color: theme.text }]}>
-          {format(selectedDate, 'MMMM yyyy')}
-        </Text>
+        <Text style={[styles.monthLabel, { color: theme.text }]}>{format(selectedDate, 'MMMM yyyy')}</Text>
         <Pressable onPress={() => shiftMonth(1)} style={styles.arrowBtn} disabled={format(selectedDate, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}>
           <Ionicons name="chevron-forward" size={22} color={theme.primary} />
         </Pressable>
@@ -61,25 +55,20 @@ export default function StatsScreen() {
 
       <ScrollView contentContainerStyle={[styles.content, byCat.length === 0 && styles.emptyContent]} showsVerticalScrollIndicator={false}>
         {byCat.length === 0 ? (
-          <EmptyState message="No expenses this month" />
+          <EmptyState message={t('stats.empty')} />
         ) : (
           <>
-            {/* Total */}
             <View style={[styles.totalCard, { backgroundColor: theme.primary }]}>
-              <Text style={styles.totalLabel}>Total spent</Text>
+              <Text style={styles.totalLabel}>{t('stats.totalSpent')}</Text>
               <Text style={styles.totalAmount}>{settings.currency}{(total / 100).toFixed(2)}</Text>
             </View>
-
-            {/* Bars */}
             <View style={styles.barsSection}>
               {byCat.map(({ cat, amount, percent }) => (
                 <View key={cat?.id ?? 'unknown'} style={styles.barRow}>
                   <View style={styles.barMeta}>
                     <View style={[styles.catDot, { backgroundColor: cat?.color ?? theme.primary }]} />
                     <Text style={[styles.barCatName, { color: theme.text }]}>{cat?.name ?? 'Unknown'}</Text>
-                    <Text style={[styles.barAmount, { color: theme.textSecondary }]}>
-                      {settings.currency}{(amount / 100).toFixed(2)}
-                    </Text>
+                    <Text style={[styles.barAmount, { color: theme.textSecondary }]}>{settings.currency}{(amount / 100).toFixed(2)}</Text>
                   </View>
                   <View style={[styles.barTrack, { backgroundColor: theme.surface }]}>
                     <View style={[styles.barFill, { width: `${percent}%`, backgroundColor: cat?.color ?? theme.primary }]} />

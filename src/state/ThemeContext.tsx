@@ -3,6 +3,7 @@ import { useColorScheme } from 'react-native';
 import { Settings } from '../types';
 import { getSettings, setSettings } from '../storage';
 import { lightTheme, darkTheme, AppTheme } from '../theme/colors';
+import i18n from '../i18n';
 
 type Action =
   | { type: 'HYDRATE'; payload: Settings }
@@ -16,7 +17,7 @@ function reducer(state: Settings, action: Action): Settings {
   }
 }
 
-const defaultSettings: Settings = { username: '', theme: 'system', currency: '$' };
+const defaultSettings: Settings = { username: '', theme: 'system', currency: '$', language: 'en' };
 
 export const SettingsContext = createContext<{
   settings: Settings;
@@ -41,6 +42,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (hydrated) setSettings(settings);
   }, [settings, hydrated]);
+
+  useEffect(() => {
+    if (hydrated && settings.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings.language, hydrated]);
 
   const resolvedTheme = settings.theme === 'system' ? colorScheme ?? 'dark' : settings.theme;
   const theme = resolvedTheme === 'light' ? lightTheme : darkTheme;

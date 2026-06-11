@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
 import { useTheme } from '../../theme/useTheme';
 
 export default function AboutScreen({ navigation }: any) {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
@@ -14,7 +16,7 @@ export default function AboutScreen({ navigation }: any) {
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
         </Pressable>
-        <Text style={[styles.title, { color: theme.text }]}>About</Text>
+        <Text style={[styles.title, { color: theme.text }]}>{t('about.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -24,29 +26,21 @@ export default function AboutScreen({ navigation }: any) {
         </View>
         <Text style={[styles.appName, { color: theme.text }]}>ExpenseFlow</Text>
         <Text style={[styles.version, { color: theme.textSecondary }]}>
-          Version {Constants.expoConfig?.version ?? '1.0.0'}
+          {t('about.version', { version: Constants.expoConfig?.version ?? '1.0.0' })}
         </Text>
 
         <View style={[styles.card, { backgroundColor: theme.bgCard, borderColor: theme.border }]}>
-          <Text style={[styles.cardText, { color: theme.textSecondary }]}>
-            A React Native fundamentals-first personal finance app. Built with Expo, AsyncStorage, and React Navigation.
-          </Text>
+          <Text style={[styles.cardText, { color: theme.textSecondary }]}>{t('about.description')}</Text>
         </View>
 
-        <Pressable
-          onPress={() => Linking.openURL('https://docs.expo.dev')}
-          style={[styles.link, { backgroundColor: theme.surface }]}
-        >
+        <Pressable onPress={() => Linking.openURL('https://docs.expo.dev')} style={[styles.link, { backgroundColor: theme.surface }]}>
           <Ionicons name="open-outline" size={18} color={theme.primary} />
-          <Text style={[styles.linkText, { color: theme.primary }]}>Expo Documentation</Text>
+          <Text style={[styles.linkText, { color: theme.primary }]}>{t('about.expoDocs')}</Text>
         </Pressable>
 
-        <Pressable
-          onPress={() => Linking.openURL('https://reactnative.dev')}
-          style={[styles.link, { backgroundColor: theme.surface }]}
-        >
+        <Pressable onPress={() => Linking.openURL('https://reactnative.dev')} style={[styles.link, { backgroundColor: theme.surface }]}>
           <Ionicons name="open-outline" size={18} color={theme.primary} />
-          <Text style={[styles.linkText, { color: theme.primary }]}>React Native Docs</Text>
+          <Text style={[styles.linkText, { color: theme.primary }]}>{t('about.rnDocs')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

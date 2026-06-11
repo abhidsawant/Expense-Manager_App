@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { ExpensesContext } from '../../state/ExpensesContext';
 import { useTheme } from '../../theme/useTheme';
@@ -12,13 +13,13 @@ import { Category } from '../../types';
 
 const COLORS = ['#A855F7', '#22D3EE', '#EC4899', '#4ADE80', '#FACC15', '#F87171', '#60A5FA', '#FB923C', '#9CA3AF'];
 const ICONS = ['restaurant', 'car', 'bag-handle', 'medkit', 'game-controller', 'receipt', 'home', 'airplane', 'school'];
-
 function uuid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
 export default function ManageCategoriesScreen({ navigation }: any) {
   const { categories, dispatch } = useContext(CategoriesContext);
   const { state: expState } = useContext(ExpensesContext);
   const theme = useTheme();
+  const { t } = useTranslation();
   const [editing, setEditing] = useState<Partial<Category> | null>(null);
   const [isNew, setIsNew] = useState(false);
 
@@ -38,12 +39,12 @@ export default function ManageCategoriesScreen({ navigation }: any) {
   function handleDelete(cat: Category) {
     const inUse = expState.expenses.some(e => e.category_id === cat.id);
     if (inUse) {
-      Alert.alert('Cannot delete', `"${cat.name}" is used by existing expenses.`);
+      Alert.alert(t('categories.cannotDelete'), t('categories.inUseMsg', { name: cat.name }));
       return;
     }
-    Alert.alert('Delete category?', `Delete "${cat.name}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => dispatch({ type: 'DELETE', payload: cat.id }) },
+    Alert.alert(t('categories.deleteTitle'), t('categories.deleteMsg', { name: cat.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.delete'), style: 'destructive', onPress: () => dispatch({ type: 'DELETE', payload: cat.id }) },
     ]);
   }
 
@@ -53,7 +54,7 @@ export default function ManageCategoriesScreen({ navigation }: any) {
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
         </Pressable>
-        <Text style={[styles.title, { color: theme.text }]}>Categories</Text>
+        <Text style={[styles.title, { color: theme.text }]}>{t('categories.title')}</Text>
         <Pressable onPress={openAdd} style={[styles.addBtn, { backgroundColor: theme.primary }]}>
           <Ionicons name="add" size={22} color="#fff" />
         </Pressable>
@@ -64,11 +65,8 @@ export default function ManageCategoriesScreen({ navigation }: any) {
         keyExtractor={c => c.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => openEdit(item)}
-            onLongPress={() => handleDelete(item)}
-            style={[styles.row, { backgroundColor: theme.bgCard, borderColor: theme.border }]}
-          >
+          <Pressable onPress={() => openEdit(item)} onLongPress={() => handleDelete(item)}
+            style={[styles.row, { backgroundColor: theme.bgCard, borderColor: theme.border }]}>
             <View style={[styles.iconBadge, { backgroundColor: item.color + '22' }]}>
               <Ionicons name={item.icon as any} size={22} color={item.color} />
             </View>
@@ -79,21 +77,20 @@ export default function ManageCategoriesScreen({ navigation }: any) {
         )}
       />
 
-      {/* Edit / Add Modal */}
       <Modal visible={editing !== null} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditing(null)}>
         <KeyboardAvoidingView style={[styles.modal, { backgroundColor: theme.bg }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={styles.modalHandle} />
-          <Text style={[styles.modalTitle, { color: theme.text }]}>{isNew ? 'New Category' : 'Edit Category'}</Text>
+          <Text style={[styles.modalTitle, { color: theme.text }]}>{isNew ? t('categories.newTitle') : t('categories.editTitle')}</Text>
 
           <TextInput
             style={[styles.nameInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-            placeholder="Category name"
+            placeholder={t('categories.namePlaceholder')}
             placeholderTextColor={theme.textMuted}
             value={editing?.name ?? ''}
-            onChangeText={t => setEditing(prev => ({ ...prev, name: t }))}
+            onChangeText={txt => setEditing(prev => ({ ...prev, name: txt }))}
           />
 
-          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>Color</Text>
+          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>{t('categories.colorLabel')}</Text>
           <View style={styles.colorRow}>
             {COLORS.map(c => (
               <Pressable key={c} onPress={() => setEditing(prev => ({ ...prev, color: c }))}
@@ -101,7 +98,7 @@ export default function ManageCategoriesScreen({ navigation }: any) {
             ))}
           </View>
 
-          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>Icon</Text>
+          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>{t('categories.iconLabel')}</Text>
           <View style={styles.iconRow}>
             {ICONS.map(ic => (
               <Pressable key={ic} onPress={() => setEditing(prev => ({ ...prev, icon: ic }))}
@@ -113,10 +110,10 @@ export default function ManageCategoriesScreen({ navigation }: any) {
 
           <View style={styles.modalActions}>
             <Pressable onPress={() => setEditing(null)} style={[styles.modalBtn, { backgroundColor: theme.surface }]}>
-              <Text style={[styles.modalBtnText, { color: theme.text }]}>Cancel</Text>
+              <Text style={[styles.modalBtnText, { color: theme.text }]}>{t('common.cancel')}</Text>
             </Pressable>
             <Pressable onPress={handleSave} style={[styles.modalBtn, { backgroundColor: theme.primary }]}>
-              <Text style={[styles.modalBtnText, { color: '#fff' }]}>Save</Text>
+              <Text style={[styles.modalBtnText, { color: '#fff' }]}>{t('common.save')}</Text>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

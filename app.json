@@ -14,18 +14,25 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.expenseflow.app",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access for receipts.",
-        "NSPhotoLibraryUsageDescription": "We need photo access for receipts."
+        "NSPhotoLibraryUsageDescription": "We need photo access for receipts.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "package": "com.expenseflow.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0D0014"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -41,6 +48,11 @@
           "imageWidth": 200
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "df8281f9-6597-4402-ad15-2fc8aac26c1a"
+      }
+    }
   }
 }

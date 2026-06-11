@@ -7,16 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { ExpensesContext } from '../../state/ExpensesContext';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { SettingsContext } from '../../state/ThemeContext';
 import { useTheme } from '../../theme/useTheme';
 import { EmptyState } from '../../components/EmptyState';
 import { Expense } from '../../types';
-
-function formatAmount(cents: number, currency: string) {
-  return `${currency}${(cents / 100).toFixed(2)}`;
-}
 
 function groupByDay(expenses: Expense[]) {
   const map: Record<string, Expense[]> = {};
@@ -28,10 +25,11 @@ function groupByDay(expenses: Expense[]) {
 }
 
 export default function HomeScreen({ navigation }: any) {
-  const { state, dispatch } = useContext(ExpensesContext);
+  const { state } = useContext(ExpensesContext);
   const { categories } = useContext(CategoriesContext);
   const { settings } = useContext(SettingsContext);
   const theme = useTheme();
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = React.useState(false);
   const fabAnim = useRef(new Animated.Value(0)).current;
 
@@ -52,9 +50,7 @@ export default function HomeScreen({ navigation }: any) {
     return (
       <Pressable
         onPress={() => navigation.navigate('ExpenseDetail', { id: item.id })}
-        onLongPress={() => {
-          navigation.navigate('AddExpense', { expenseId: item.id });
-        }}
+        onLongPress={() => navigation.navigate('AddExpense', { expenseId: item.id })}
         style={({ pressed }) => [
           styles.row,
           { backgroundColor: theme.bgCard, borderColor: theme.border, opacity: pressed ? 0.75 : 1 },
@@ -68,7 +64,7 @@ export default function HomeScreen({ navigation }: any) {
           {item.note ? <Text style={[styles.note, { color: theme.textSecondary }]} numberOfLines={1}>{item.note}</Text> : null}
         </View>
         <Text style={[styles.amount, { color: theme.primary }]}>
-          {formatAmount(item.amount_cents, settings.currency)}
+          {settings.currency}{(item.amount_cents / 100).toFixed(2)}
         </Text>
       </Pressable>
     );
@@ -78,28 +74,20 @@ export default function HomeScreen({ navigation }: any) {
     const total = data.reduce((s: number, e: Expense) => s + e.amount_cents, 0);
     return (
       <View style={[styles.sectionHeader, { backgroundColor: theme.bg }]}>
-        <Text style={[styles.sectionDate, { color: theme.textSecondary }]}>
-          {format(parseISO(title), 'EEE, MMM d')}
-        </Text>
-        <Text style={[styles.sectionTotal, { color: theme.textMuted }]}>
-          {formatAmount(total, settings.currency)}
-        </Text>
+        <Text style={[styles.sectionDate, { color: theme.textSecondary }]}>{format(parseISO(title), 'EEE, MMM d')}</Text>
+        <Text style={[styles.sectionTotal, { color: theme.textMuted }]}>{settings.currency}{(total / 100).toFixed(2)}</Text>
       </View>
     );
   }, [theme, settings.currency]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={['top']}>
-      {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.greeting, { color: theme.textSecondary }]}>Hey {settings.username} 👋</Text>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Expenses</Text>
+          <Text style={[styles.greeting, { color: theme.textSecondary }]}>{t('home.greeting', { name: settings.username })}</Text>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>{t('home.title')}</Text>
         </View>
-        <Pressable
-          onPress={() => navigation.navigate('Stats')}
-          style={[styles.statsBtn, { backgroundColor: theme.surface }]}
-        >
+        <Pressable onPress={() => navigation.navigate('Stats')} style={[styles.statsBtn, { backgroundColor: theme.surface }]}>
           <Ionicons name="stats-chart" size={20} color={theme.primary} />
         </Pressable>
       </View>
@@ -110,26 +98,14 @@ export default function HomeScreen({ navigation }: any) {
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         contentContainerStyle={[styles.list, sections.length === 0 && styles.listEmpty]}
-        ListEmptyComponent={<EmptyState message={'No expenses yet.\nTap + to add one!'} />}
+        ListEmptyComponent={<EmptyState message={t('home.empty')} />}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
         stickySectionHeadersEnabled={false}
         showsVerticalScrollIndicator={false}
       />
 
-      {/* FAB */}
-      <Animated.View
-        style={[
-          styles.fab,
-          {
-            transform: [{ scale: fabAnim }],
-            shadowColor: theme.primary,
-          },
-        ]}
-      >
-        <Pressable
-          onPress={() => navigation.navigate('AddExpense', {})}
-          style={[styles.fabInner, { backgroundColor: theme.primary }]}
-        >
+      <Animated.View style={[styles.fab, { transform: [{ scale: fabAnim }], shadowColor: theme.primary }]}>
+        <Pressable onPress={() => navigation.navigate('AddExpense', {})} style={[styles.fabInner, { backgroundColor: theme.primary }]}>
           <Ionicons name="add" size={32} color="#fff" />
         </Pressable>
       </Animated.View>
@@ -148,18 +124,12 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 4, marginTop: 8 },
   sectionDate: { fontSize: 13, fontWeight: '600', letterSpacing: 0.3 },
   sectionTotal: { fontSize: 13, fontWeight: '500' },
-  row: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderRadius: 16, borderWidth: 1, padding: 14, marginBottom: 8,
-  },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 1, padding: 14, marginBottom: 8 },
   iconBadge: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   rowText: { flex: 1 },
   catName: { fontSize: 15, fontWeight: '600' },
   note: { fontSize: 12, marginTop: 2 },
   amount: { fontSize: 16, fontWeight: '700' },
-  fab: {
-    position: 'absolute', bottom: 28, right: 24,
-    shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16, elevation: 12,
-  },
+  fab: { position: 'absolute', bottom: 28, right: 24, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16, elevation: 12 },
   fabInner: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
 });

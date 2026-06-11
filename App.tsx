@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import './src/i18n'; // init i18n before anything renders
 import { SettingsProvider } from './src/state/ThemeContext';
 import { ExpensesProvider } from './src/state/ExpensesContext';
 import { CategoriesProvider } from './src/state/CategoriesContext';

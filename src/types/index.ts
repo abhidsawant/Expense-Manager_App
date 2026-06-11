@@ -4,6 +4,7 @@ export type Settings = {
   username: string;
   theme: Theme;
   currency: string;
+  language: string;
 };
 
 export type Category = {
