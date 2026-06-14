@@ -7,6 +7,7 @@ import { SettingsContext } from '../../state/ThemeContext';
 import { ExpensesContext } from '../../state/ExpensesContext';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { useTheme } from '../../theme/useTheme';
+import { useResponsive } from '../../theme/useResponsive';
 import { clearAll } from '../../storage';
 import { Theme } from '../../types';
 import Constants from 'expo-constants';
@@ -20,6 +21,7 @@ export default function SettingsScreen({ navigation }: any) {
   const { dispatch: expDispatch } = useContext(ExpensesContext);
   const { dispatch: catDispatch } = useContext(CategoriesContext);
   const theme = useTheme();
+  const { rs, hPad } = useResponsive();
   const { t } = useTranslation();
 
   function handleClearData() {
@@ -48,11 +50,11 @@ export default function SettingsScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]}>{t('settings.title')}</Text>
+      <View style={[styles.header, { paddingHorizontal: hPad }]}>
+        <Text style={[styles.title, { color: theme.text, fontSize: rs(26, 22, 32) }]}>{t('settings.title')}</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: hPad }]} showsVerticalScrollIndicator={false}>
 
         {/* Profile card */}
         <SectionLabel title={t('settings.profile')} />

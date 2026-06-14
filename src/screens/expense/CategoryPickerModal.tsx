@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { useTheme } from '../../theme/useTheme';
+import { useResponsive } from '../../theme/useResponsive';
 
 type Props = {
   visible: boolean;
@@ -16,13 +17,14 @@ type Props = {
 export default function CategoryPickerModal({ visible, selected, onSelect, onClose, onAddNew }: Props) {
   const { categories } = useContext(CategoriesContext);
   const theme = useTheme();
+  const { hPad, isTablet } = useResponsive();
   const { t } = useTranslation();
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
         <View style={styles.handle} />
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingHorizontal: hPad }]}>
           <Text style={[styles.title, { color: theme.text }]}>{t('categoryPicker.title')}</Text>
           <Pressable onPress={onClose}>
             <Ionicons name="close-circle" size={28} color={theme.textMuted} />
@@ -30,9 +32,10 @@ export default function CategoryPickerModal({ visible, selected, onSelect, onClo
         </View>
         <FlatList
           data={categories}
-          numColumns={3}
+          numColumns={isTablet ? 4 : 3}
+          key={isTablet ? 'tablet' : 'phone'}
           keyExtractor={c => c.id}
-          contentContainerStyle={styles.grid}
+          contentContainerStyle={[styles.grid, { paddingHorizontal: hPad - 8 }]}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => onSelect(item.id)}

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView, Pressable,
   KeyboardAvoidingView, Platform, Alert, ActionSheetIOS,
@@ -15,6 +15,7 @@ import { ExpensesContext } from '../../state/ExpensesContext';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { SettingsContext } from '../../state/ThemeContext';
 import { useTheme } from '../../theme/useTheme';
+import { useResponsive } from '../../theme/useResponsive';
 import { Button } from '../../components/Button';
 import { Expense } from '../../types';
 import CategoryPickerModal from './CategoryPickerModal';
@@ -28,6 +29,7 @@ export default function AddExpenseScreen({ route, navigation }: any) {
   const { categories } = useContext(CategoriesContext);
   const { settings } = useContext(SettingsContext);
   const theme = useTheme();
+  const { rs, hPad } = useResponsive();
   const { t } = useTranslation();
 
   const [amount, setAmount] = useState(existing ? (existing.amount_cents / 100).toFixed(2) : '');
@@ -37,6 +39,7 @@ export default function AddExpenseScreen({ route, navigation }: any) {
   const [receiptUri, setReceiptUri] = useState<string | null>(existing?.receipt_uri ?? null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCatPicker, setShowCatPicker] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
 
   const selectedCat = categories.find(c => c.id === categoryId);
   const isValid = parseFloat(amount) > 0 && categoryId.length > 0;
@@ -88,9 +91,13 @@ export default function AddExpenseScreen({ route, navigation }: any) {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: theme.border }]}>
+        <View style={[styles.header, { borderBottomColor: theme.border, paddingHorizontal: hPad }]}>
           <Pressable onPress={() => navigation.goBack()} style={[styles.iconBtn, { backgroundColor: theme.surface }]}>
             <Ionicons name="close" size={20} color={theme.text} />
           </Pressable>
@@ -100,12 +107,12 @@ export default function AddExpenseScreen({ route, navigation }: any) {
           <View style={{ width: 38 }} />
         </View>
 
-        <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView ref={scrollRef} contentContainerStyle={[styles.form, { paddingHorizontal: hPad }]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {/* Amount */}
-          <View style={[styles.amountCard, { backgroundColor: selectedCat?.color ?? theme.primary }]}>
-            <Text style={styles.amountCurrencyLabel}>{settings.currency}</Text>
+          <View style={[styles.amountCard, { backgroundColor: selectedCat?.color ?? theme.primary, padding: rs(20, 14) }]}>
+            <Text style={[styles.amountCurrencyLabel, { fontSize: rs(24, 18) }]}>{settings.currency}</Text>
             <TextInput
-              style={styles.amountInput}
+              style={[styles.amountInput, { fontSize: rs(38, 28, 44) }]}
               placeholder="0.00"
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={amount}
@@ -162,6 +169,7 @@ export default function AddExpenseScreen({ route, navigation }: any) {
               onChangeText={txt => setNote(txt.slice(0, 200))}
               multiline
               maxLength={200}
+              onFocus={() => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100)}
             />
           </View>
 
@@ -214,8 +222,8 @@ const styles = StyleSheet.create({
   form: { paddingHorizontal: 20, paddingTop: 20, gap: 12, paddingBottom: 48 },
 
   amountCard: { borderRadius: 22, padding: 24, flexDirection: 'row', alignItems: 'center', gap: 4 },
-  amountCurrencyLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 28, fontWeight: '700' },
-  amountInput: { flex: 1, fontSize: 44, fontWeight: '800', color: '#fff' },
+  amountCurrencyLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 24, fontWeight: '700' },
+  amountInput: { flex: 1, fontSize: 38, fontWeight: '800', color: '#fff', minWidth: 0 },
 
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 1, padding: 14 },
   rowIconWrap: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },

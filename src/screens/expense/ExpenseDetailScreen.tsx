@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Alert } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { ExpensesContext } from '../../state/ExpensesContext';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { SettingsContext } from '../../state/ThemeContext';
 import { useTheme } from '../../theme/useTheme';
+import { useResponsive } from '../../theme/useResponsive';
 
 export default function ExpenseDetailScreen({ route, navigation }: any) {
   const { id } = route.params;
@@ -16,7 +17,9 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
   const { categories } = useContext(CategoriesContext);
   const { settings } = useContext(SettingsContext);
   const theme = useTheme();
+  const { rs, hPad } = useResponsive();
   const { t } = useTranslation();
+  const [receiptVisible, setReceiptVisible] = useState(false);
 
   const expense = state.expenses.find(e => e.id === id);
   if (!expense) return null;
@@ -32,7 +35,7 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+      <View style={[styles.header, { borderBottomColor: theme.border, paddingHorizontal: hPad }]}>
         <Pressable onPress={() => navigation.goBack()} style={[styles.iconBtn, { backgroundColor: theme.surface }]}>
           <Ionicons name="arrow-back" size={20} color={theme.text} />
         </Pressable>
@@ -42,7 +45,7 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: hPad }]} showsVerticalScrollIndicator={false}>
         {/* Amount hero card */}
         <View style={[styles.amountCard, { backgroundColor: cat?.color ?? theme.primary }]}>
           <View style={styles.amountCardInner}>
@@ -54,7 +57,7 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
               <Text style={styles.amountDate}>{format(parseISO(expense.spent_on), 'EEEE, MMMM d yyyy')}</Text>
             </View>
           </View>
-          <Text style={styles.amountText}>{settings.currency}{(expense.amount_cents / 100).toFixed(2)}</Text>
+          <Text style={[styles.amountText, { fontSize: rs(44, 32, 52) }]}>{settings.currency}{(expense.amount_cents / 100).toFixed(2)}</Text>
         </View>
 
         {/* Note */}
@@ -69,9 +72,12 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
 
         {/* Receipt */}
         {expense.receipt_uri && (
-          <View style={[styles.receiptWrap, { borderColor: theme.border }]}>
+          <Pressable onPress={() => setReceiptVisible(true)} style={[styles.receiptWrap, { borderColor: theme.border }]}>
             <Image source={{ uri: expense.receipt_uri }} style={styles.receipt} contentFit="cover" />
-          </View>
+            <View style={styles.receiptOverlay}>
+              <Ionicons name="expand-outline" size={20} color="#fff" />
+            </View>
+          </Pressable>
         )}
 
         {/* Delete */}
@@ -86,6 +92,25 @@ export default function ExpenseDetailScreen({ route, navigation }: any) {
           <Text style={[styles.deleteLabel, { color: theme.danger }]}>{t('expenseDetail.deleteTitle')}</Text>
         </Pressable>
       </ScrollView>
+
+      {/* Full-screen receipt viewer */}
+      <Modal visible={receiptVisible} transparent animationType="fade" onRequestClose={() => setReceiptVisible(false)}>
+        <View style={styles.lightbox}>
+          <Pressable style={styles.lightboxClose} onPress={() => setReceiptVisible(false)}>
+            <Ionicons name="close" size={24} color="#fff" />
+          </Pressable>
+          <ScrollView
+            maximumZoomScale={4}
+            minimumZoomScale={1}
+            centerContent
+            contentContainerStyle={styles.lightboxContent}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Image source={{ uri: expense.receipt_uri! }} style={styles.lightboxImage} contentFit="contain" />
+          </ScrollView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -113,6 +138,12 @@ const styles = StyleSheet.create({
 
   receiptWrap: { borderRadius: 18, borderWidth: 1, overflow: 'hidden' },
   receipt: { width: '100%', height: 220 },
+  receiptOverlay: { position: 'absolute', bottom: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 20, padding: 6 },
+
+  lightbox: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center' },
+  lightboxClose: { position: 'absolute', top: 52, right: 20, zIndex: 10, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 20, padding: 8 },
+  lightboxContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  lightboxImage: { width: '100%', height: '100%' },
 
   deleteBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

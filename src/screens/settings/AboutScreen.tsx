@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
 import { useTheme } from '../../theme/useTheme';
+import { useResponsive } from '../../theme/useResponsive';
 
 const LINKS = [
   { key: 'githubRepo', icon: 'logo-github', url: 'https://github.com/abhidsawant/expense_manager' },
@@ -14,11 +15,12 @@ const LINKS = [
 
 export default function AboutScreen({ navigation }: any) {
   const theme = useTheme();
+  const { rs, hPad } = useResponsive();
   const { t } = useTranslation();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+      <View style={[styles.header, { borderBottomColor: theme.border, paddingHorizontal: hPad }]}>
         <Pressable onPress={() => navigation.goBack()} style={[styles.iconBtn, { backgroundColor: theme.surface }]}>
           <Ionicons name="arrow-back" size={20} color={theme.text} />
         </Pressable>
@@ -26,15 +28,15 @@ export default function AboutScreen({ navigation }: any) {
         <View style={{ width: 38 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: hPad }]} showsVerticalScrollIndicator={false}>
         {/* App identity */}
         <View style={styles.identity}>
-          <View style={[styles.appIcon, { backgroundColor: theme.primary, shadowColor: theme.shadow }]}>
-            <Text style={styles.appEmoji}>💸</Text>
+          <View style={[styles.appIcon, { backgroundColor: theme.primary, shadowColor: theme.shadow, width: rs(88, 70, 104), height: rs(88, 70, 104), borderRadius: rs(24, 18, 28) }]}>
+            <Text style={[styles.appEmoji, { fontSize: rs(42, 32, 50) }]}>💸</Text>
           </View>
-          <Text style={[styles.appName, { color: theme.text }]}>ExpenseFlow</Text>
+          <Text style={[styles.appName, { color: theme.text, fontSize: rs(28, 22, 34) }]}>ExpenseFlow</Text>
           <View style={[styles.versionBadge, { backgroundColor: theme.primaryLight }]}>
-            <Text style={[styles.versionText, { color: theme.primary }]}>
+            <Text style={[styles.versionText, { color: theme.primary, fontSize: rs(13, 11, 15) }]}>
               {t('about.version', { version: Constants.expoConfig?.version ?? '1.0.0' })}
             </Text>
           </View>
@@ -42,7 +44,7 @@ export default function AboutScreen({ navigation }: any) {
 
         {/* Description */}
         <View style={[styles.descCard, { backgroundColor: theme.bgCard, borderColor: theme.border }]}>
-          <Text style={[styles.descText, { color: theme.textSecondary }]}>{t('about.description')}</Text>
+          <Text style={[styles.descText, { color: theme.textSecondary, fontSize: rs(14, 12, 16) }]}>{t('about.description')}</Text>
         </View>
 
         {/* Links */}
@@ -56,7 +58,7 @@ export default function AboutScreen({ navigation }: any) {
                 <View style={[styles.linkIcon, { backgroundColor: theme.primaryLight }]}>
                   <Ionicons name={icon as any} size={17} color={theme.primary} />
                 </View>
-                <Text style={[styles.linkText, { color: theme.text }]}>{t(`about.${key}` as any)}</Text>
+                <Text style={[styles.linkText, { color: theme.text, fontSize: rs(15, 13, 17) }]}>{t(`about.${key}` as any)}</Text>
                 <Ionicons name="arrow-forward-outline" size={15} color={theme.textMuted} />
               </Pressable>
               {idx < LINKS.length - 1 && <View style={[styles.divider, { backgroundColor: theme.border }]} />}
@@ -66,7 +68,7 @@ export default function AboutScreen({ navigation }: any) {
 
         {/* Made with */}
         <View style={styles.madeWith}>
-          <Text style={[styles.madeWithText, { color: theme.textMuted }]}>Made with ❤️ using React Native + Expo</Text>
+          <Text style={[styles.madeWithText, { color: theme.textMuted, fontSize: rs(13, 11, 15) }]}>Made with ❤️ using React Native + Expo</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -77,31 +79,31 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1,
+    paddingVertical: 12, borderBottomWidth: 1,
   },
   iconBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 17, fontWeight: '700' },
-  content: { paddingHorizontal: 20, paddingTop: 32, paddingBottom: 48, gap: 20 },
+  content: { paddingTop: 32, paddingBottom: 48, gap: 20 },
 
   identity: { alignItems: 'center', gap: 12 },
   appIcon: {
-    width: 88, height: 88, borderRadius: 24, alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
     shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 8,
   },
-  appEmoji: { fontSize: 42 },
-  appName: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
+  appEmoji: {},
+  appName: { fontWeight: '800', letterSpacing: -0.5 },
   versionBadge: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 },
-  versionText: { fontSize: 13, fontWeight: '600' },
+  versionText: { fontWeight: '600' },
 
   descCard: { borderRadius: 16, borderWidth: 1, padding: 18 },
-  descText: { fontSize: 14, lineHeight: 22, textAlign: 'center' },
+  descText: { lineHeight: 22, textAlign: 'center' },
 
   linksCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
   linkIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  linkText: { flex: 1, fontSize: 15, fontWeight: '500' },
+  linkText: { flex: 1, fontWeight: '500' },
   divider: { height: 1, marginLeft: 62 },
 
   madeWith: { alignItems: 'center' },
-  madeWithText: { fontSize: 13 },
+  madeWithText: {},
 });
