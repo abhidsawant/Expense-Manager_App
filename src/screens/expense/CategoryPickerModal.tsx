@@ -5,9 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { CategoriesContext } from '../../state/CategoriesContext';
 import { useTheme } from '../../theme/useTheme';
 import { useResponsive } from '../../theme/useResponsive';
+import ColorPicker from '../../components/ColorPicker';
 
 const COLORS = ['#A855F7', '#22D3EE', '#EC4899', '#4ADE80', '#FACC15', '#F87171', '#60A5FA', '#FB923C', '#9CA3AF'];
-const ICONS = ['restaurant', 'car', 'bag-handle', 'medkit', 'game-controller', 'receipt', 'home', 'airplane', 'school'];
+const ICONS = [
+  'restaurant', 'car', 'bag-handle', 'medkit', 'game-controller', 'receipt', 'home', 'airplane', 'school',
+  'fitness', 'musical-notes', 'cafe', 'bicycle', 'bus', 'train', 'boat', 'pizza', 'beer',
+  'gift', 'heart', 'paw', 'leaf', 'flower', 'umbrella', 'bulb', 'desktop', 'phone-portrait',
+  'camera', 'book', 'briefcase', 'construct', 'cut', 'color-palette', 'film', 'headset',
+  'tv', 'shirt', 'cart', 'wallet', 'cash', 'card', 'trending-up', 'water', 'wine',
+];
 function uuid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
 type Props = {
@@ -28,9 +35,11 @@ export default function CategoryPickerModal({ visible, selected, onSelect, onClo
   const [name, setName] = useState('');
   const [color, setColor] = useState(COLORS[0]);
   const [icon, setIcon] = useState(ICONS[0]);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   function handleClose() {
     setShowNewForm(false);
+    setShowColorPicker(false);
     setName(''); setColor(COLORS[0]); setIcon(ICONS[0]);
     onClose();
   }
@@ -41,6 +50,7 @@ export default function CategoryPickerModal({ visible, selected, onSelect, onClo
     dispatch({ type: 'ADD', payload: newCat });
     onSelect(newCat.id);
     setShowNewForm(false);
+    setShowColorPicker(false);
     setName(''); setColor(COLORS[0]); setIcon(ICONS[0]);
   }
 
@@ -105,13 +115,35 @@ export default function CategoryPickerModal({ visible, selected, onSelect, onClo
               {COLORS.map(c => (
                 <Pressable
                   key={c}
-                  onPress={() => setColor(c)}
+                  onPress={() => { setColor(c); setShowColorPicker(false); }}
                   style={[styles.colorSwatch, { backgroundColor: c, transform: [{ scale: color === c ? 1.2 : 1 }] }]}
                 >
                   {color === c && <Ionicons name="checkmark" size={14} color="#fff" />}
                 </Pressable>
               ))}
+              <Pressable
+                onPress={() => setShowColorPicker(p => !p)}
+                style={[styles.colorSwatch, { borderWidth: 1.5, borderColor: showColorPicker ? theme.primary : theme.border, backgroundColor: showColorPicker ? theme.primaryLight : theme.surface }]}
+              >
+                <Ionicons name="color-palette-outline" size={16} color={showColorPicker ? theme.primary : theme.textMuted} />
+              </Pressable>
             </View>
+
+            {showColorPicker && (
+              <View style={[styles.pickerCard, { backgroundColor: theme.bgCard, borderColor: theme.border }]}>
+                <ColorPicker
+                  color={color}
+                  onChange={hex => setColor(hex)}
+                />
+                <Pressable
+                  onPress={() => setShowColorPicker(false)}
+                  style={[styles.doneBtn, { backgroundColor: color }]}
+                >
+                  <Ionicons name="checkmark" size={16} color="#fff" />
+                  <Text style={styles.doneBtnText}>Done</Text>
+                </Pressable>
+              </View>
+            )}
 
             {/* Icon */}
             <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>{t('categories.iconLabel')}</Text>
@@ -222,6 +254,9 @@ const styles = StyleSheet.create({
   colorSwatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   iconOpt: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  pickerCard: { borderRadius: 18, borderWidth: 1, padding: 16, gap: 14 },
+  doneBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 12, borderRadius: 14 },
+  doneBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
   actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
   actionBtn: { padding: 16, borderRadius: 18, alignItems: 'center' },
   actionBtnText: { fontSize: 16, fontWeight: '700' },

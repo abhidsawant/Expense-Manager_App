@@ -14,7 +14,13 @@ import { Category } from '../../types';
 import ColorPicker from '../../components/ColorPicker';
 
 const COLORS = ['#A855F7', '#22D3EE', '#EC4899', '#4ADE80', '#FACC15', '#F87171', '#60A5FA', '#FB923C', '#9CA3AF'];
-const ICONS = ['restaurant', 'car', 'bag-handle', 'medkit', 'game-controller', 'receipt', 'home', 'airplane', 'school'];
+const ICONS = [
+  'restaurant', 'car', 'bag-handle', 'medkit', 'game-controller', 'receipt', 'home', 'airplane', 'school',
+  'fitness', 'musical-notes', 'cafe', 'bicycle', 'bus', 'train', 'boat', 'pizza', 'beer',
+  'gift', 'heart', 'paw', 'leaf', 'flower', 'umbrella', 'bulb', 'desktop', 'phone-portrait',
+  'camera', 'book', 'briefcase', 'construct', 'cut', 'color-palette', 'film', 'headset',
+  'tv', 'shirt', 'cart', 'wallet', 'cash', 'card', 'trending-up', 'water', 'wine',
+];
 function uuid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
 export default function ManageCategoriesScreen({ navigation }: any) {

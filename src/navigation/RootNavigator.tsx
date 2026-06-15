@@ -29,7 +29,7 @@ function AppTabs() {
             backgroundColor: theme.tabBar,
             borderTopColor: theme.tabBarBorder,
             borderTopWidth: 1,
-            height: Platform.OS === 'android' ? 68 : undefined,
+            height: Platform.OS === 'android' ? 80 : undefined,
             paddingBottom: Platform.OS === 'android' ? 10 : undefined,
             paddingTop: Platform.OS === 'android' ? 6 : undefined,
           },
