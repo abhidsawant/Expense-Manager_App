@@ -24,7 +24,6 @@ type Props = {
   onClose: () => void;
   onAddNew: () => void;
 };
-
 export default function CategoryPickerModal({ visible, selected, onSelect, onClose }: Props) {
   const { categories, dispatch } = useContext(CategoriesContext);
   const theme = useTheme();
