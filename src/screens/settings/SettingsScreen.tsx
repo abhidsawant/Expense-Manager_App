@@ -99,7 +99,14 @@ export default function SettingsScreen({ navigation }: any) {
   function handleClearData() {
     Alert.alert(t('settings.clearTitle'), t('settings.clearMsg'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('common.delete'), style: 'destructive', onPress: () => clearAll().then(() => { expDispatch({ type: 'CLEAR' }); catDispatch({ type: 'RESET' }); }) },
+      {
+        text: t('common.delete'), style: 'destructive', onPress: () =>
+          clearAll().then(() => {
+            expDispatch({ type: 'CLEAR' });
+            catDispatch({ type: 'RESET' });
+            dispatch({ type: 'UPDATE', payload: { username: '' } });
+          }),
+      },
     ]);
   }
 

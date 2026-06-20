@@ -102,8 +102,12 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={styles.summaryGreeting}>{t('home.greeting', { name: settings.username })}</Text>
           <Text style={styles.summaryLabel}>{format(new Date(), 'MMMM yyyy')}</Text>
         </View>
-        <Pressable onPress={() => navigation.navigate('About')} style={styles.summaryInfoBtn}>
-          <Ionicons name="information-circle-outline" size={20} color="rgba(255,255,255,0.7)" />
+        <Pressable
+          onPress={() => navigation.navigate('About')}
+          style={({ pressed }) => [styles.summaryInfoBtn, { backgroundColor: 'rgba(255,255,255,0.18)', opacity: pressed ? 0.5 : 1 }]}
+        >
+          <Ionicons name="information-circle-outline" size={14} color="#fff" />
+          <Text style={styles.summaryInfoBtnText}>About</Text>
         </Pressable>
       </View>
       <Text style={[styles.summaryAmount, { fontSize: rs(36, 28, 44) }]}>
@@ -160,7 +164,8 @@ const styles = StyleSheet.create({
   summaryTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   summaryGreeting: { color: 'rgba(255,255,255,0.65)', fontSize: 13, fontWeight: '500' },
   summaryLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 1 },
-  summaryInfoBtn: { padding: 2 },
+  summaryInfoBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20 },
+  summaryInfoBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   summaryAmount: { color: '#fff', fontWeight: '800', letterSpacing: -1, marginTop: 4 },
   summaryFooter: { flexDirection: 'row', gap: 16, marginTop: 6 },
   summaryStatItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
