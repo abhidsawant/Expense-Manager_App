@@ -147,17 +147,23 @@ export default function CategoryPickerModal({ visible, selected, onSelect, onClo
 
             {/* Icon */}
             <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>{t('categories.iconLabel')}</Text>
-            <View style={styles.iconRow}>
+            <ScrollView
+              horizontal={false}
+              style={[styles.iconScroll, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              contentContainerStyle={styles.iconRow}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled
+            >
               {ICONS.map(ic => (
                 <Pressable
                   key={ic}
                   onPress={() => setIcon(ic)}
-                  style={[styles.iconOpt, { backgroundColor: icon === ic ? color : theme.surface }]}
+                  style={[styles.iconOpt, { backgroundColor: icon === ic ? color : theme.bgCard }]}
                 >
                   <Ionicons name={ic as any} size={22} color={icon === ic ? '#fff' : theme.textSecondary} />
                 </Pressable>
               ))}
-            </View>
+            </ScrollView>
 
             {/* Actions */}
             <View style={styles.actions}>
@@ -252,7 +258,8 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.1, textTransform: 'uppercase' },
   colorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, alignItems: 'center' },
   colorSwatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  iconScroll: { maxHeight: 180, borderRadius: 16, borderWidth: 1, padding: 10 },
+  iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 15 },
   iconOpt: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   pickerCard: { borderRadius: 18, borderWidth: 1, padding: 16, gap: 14 },
   doneBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 12, borderRadius: 14 },

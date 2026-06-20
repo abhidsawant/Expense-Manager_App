@@ -175,20 +175,26 @@ export default function ManageCategoriesScreen({ navigation }: any) {
 
             {/* Icon */}
             <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>{t('categories.iconLabel')}</Text>
-            <View style={styles.iconRow}>
+            <ScrollView
+              horizontal={false}
+              style={[styles.iconScroll, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              contentContainerStyle={styles.iconRow}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled
+            >
               {ICONS.map(ic => {
                 const isActive = editing?.icon === ic;
                 return (
                   <Pressable
                     key={ic}
                     onPress={() => setEditing(prev => ({ ...prev, icon: ic }))}
-                    style={[styles.iconOpt, { backgroundColor: isActive ? (editing?.color ?? theme.primary) : theme.surface }]}
+                    style={[styles.iconOpt, { backgroundColor: isActive ? (editing?.color ?? theme.primary) : theme.bgCard }]}
                   >
                     <Ionicons name={ic as any} size={22} color={isActive ? '#fff' : theme.textSecondary} />
                   </Pressable>
                 );
               })}
-            </View>
+            </ScrollView>
 
             {/* Actions */}
             <View style={styles.modalActions}>
@@ -249,7 +255,8 @@ const styles = StyleSheet.create({
   doneBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 12, borderRadius: 14 },
   doneBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 
-  iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  iconScroll: { maxHeight: 180, borderRadius: 16, borderWidth: 1, padding: 10 },
+  iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 15 },
   iconOpt: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 
   modalActions: { flexDirection: 'row', gap: 10, marginTop: 6 },
