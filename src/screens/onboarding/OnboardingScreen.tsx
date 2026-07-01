@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef } from 'react';
 import {
   View, Text, TextInput, StyleSheet, KeyboardAvoidingView,
-  Platform, Pressable, ScrollView,
+  Platform, Pressable, ScrollView, Modal, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import { LANGUAGES } from '../../i18n';
 export default function OnboardingScreen({ navigation }: any) {
   const [name, setName] = useState('');
   const [selectedLang, setSelectedLang] = useState('en');
+  const [langOpen, setLangOpen] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const { dispatch } = useContext(SettingsContext);
   const theme = useTheme();
@@ -59,37 +60,39 @@ export default function OnboardingScreen({ navigation }: any) {
           {/* Language Picker */}
           <View style={styles.section}>
             <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>{t('settings.language')}</Text>
-            <View style={styles.langGrid}>
-              {LANGUAGES.map(lang => {
-                const isSelected = selectedLang === lang.code;
-                return (
-                  <Pressable
-                    key={lang.code}
-                    onPress={() => handleSelectLang(lang.code)}
-                    style={({ pressed }) => [
-                      styles.langCard,
-                      {
-                        backgroundColor: isSelected ? theme.primary : theme.bgCard,
-                        borderColor: isSelected ? theme.primary : theme.border,
-                        opacity: pressed ? 0.8 : 1,
-                        shadowColor: isSelected ? theme.shadow : 'transparent',
-                        paddingHorizontal: isSmall ? 10 : 14,
-                      },
-                    ]}
-                  >
-                    <Text style={{ fontSize: isSmall ? 16 : 20 }}>{lang.flag}</Text>
-                    <Text style={[styles.langLabel, { color: isSelected ? '#fff' : theme.text, fontSize: rs(13, 11) }]}>
-                      {lang.label}
-                    </Text>
-                    {isSelected && (
-                      <View style={[styles.checkBadge, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
-                        <Text style={styles.checkMark}>✓</Text>
-                      </View>
-                    )}
-                  </Pressable>
-                );
-              })}
-            </View>
+            <Pressable
+              onPress={() => setLangOpen(true)}
+              style={[styles.dropdown, { backgroundColor: theme.bgCard, borderColor: theme.border }]}
+            >
+              <Text style={{ fontSize: 20 }}>{LANGUAGES.find(l => l.code === selectedLang)?.flag}</Text>
+              <Text style={[styles.dropdownText, { color: theme.text, fontSize: rs(15, 13) }]}>
+                {LANGUAGES.find(l => l.code === selectedLang)?.label}
+              </Text>
+              <Text style={{ color: theme.textMuted }}>▾</Text>
+            </Pressable>
+            <Modal visible={langOpen} transparent animationType="fade" onRequestClose={() => setLangOpen(false)}>
+              <Pressable style={styles.overlay} onPress={() => setLangOpen(false)}>
+                <View style={[styles.dropdownMenu, { backgroundColor: theme.bgCard, borderColor: theme.border }]}>
+                  <FlatList
+                    data={LANGUAGES}
+                    keyExtractor={l => l.code}
+                    renderItem={({ item }) => {
+                      const isSelected = selectedLang === item.code;
+                      return (
+                        <Pressable
+                          onPress={() => { handleSelectLang(item.code); setLangOpen(false); }}
+                          style={[styles.dropdownItem, { backgroundColor: isSelected ? theme.primaryLight : 'transparent' }]}
+                        >
+                          <Text style={{ fontSize: 20 }}>{item.flag}</Text>
+                          <Text style={[styles.dropdownText, { color: theme.text, fontSize: rs(15, 13) }]}>{item.label}</Text>
+                          {isSelected && <Text style={{ color: theme.primary }}>✓</Text>}
+                        </Pressable>
+                      );
+                    }}
+                  />
+                </View>
+              </Pressable>
+            </Modal>
           </View>
 
           {/* Name form */}
@@ -134,16 +137,11 @@ const styles = StyleSheet.create({
   subtitle: { lineHeight: 26, fontWeight: '400' },
   section: { gap: 12 },
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
-  langGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  langCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingVertical: 12, borderRadius: 14, borderWidth: 1.5,
-    minWidth: '47%', flex: 1,
-    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
-  },
-  langLabel: { fontWeight: '600', flex: 1 },
-  checkBadge: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  checkMark: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  dropdown: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 14, borderWidth: 1.5, paddingHorizontal: 16, paddingVertical: 14 },
+  dropdownText: { flex: 1, fontWeight: '600' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'center', paddingHorizontal: 32 },
+  dropdownMenu: { borderRadius: 16, borderWidth: 1.5, overflow: 'hidden' },
+  dropdownItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
   inputWrap: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 16, borderWidth: 1.5, paddingHorizontal: 16, paddingVertical: 4 },
   input: { flex: 1, fontWeight: '500', paddingVertical: 12 },
   clearBtn: { fontSize: 16, paddingHorizontal: 4 },
