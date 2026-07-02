@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../theme/useTheme';
 
 export function EmptyState({ message }: { message: string }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <View style={[styles.ring, { borderColor: theme.border }]}>
@@ -13,7 +15,7 @@ export function EmptyState({ message }: { message: string }) {
         </View>
       </View>
       <Text style={[styles.text, { color: theme.text }]}>{message}</Text>
-      <Text style={[styles.sub, { color: theme.textMuted }]}>Your expenses will appear here</Text>
+      <Text style={[styles.sub, { color: theme.textMuted }]}>{t('home.emptySub')}</Text>
     </View>
   );
 }

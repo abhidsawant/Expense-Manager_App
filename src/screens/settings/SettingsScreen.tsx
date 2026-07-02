@@ -46,13 +46,18 @@ function DropdownPicker({
         onPress={() => setOpen(true)}
         style={[styles.dropdownTrigger, { backgroundColor: theme.surface, borderColor: theme.border }]}
       >
-        <Text style={[styles.dropdownTriggerText, { color: selected ? theme.text : theme.textMuted }]}>
-          {selected
-            ? selected.sublabel
-              ? `${selected.label}  —  ${selected.sublabel}`
-              : selected.label
-            : placeholder}
-        </Text>
+        <View style={styles.dropdownTriggerContent}>
+          {selected ? (
+            <>
+              <Text style={[styles.dropdownTriggerText, { color: theme.text }]}>{selected.label}</Text>
+              {selected.sublabel && (
+                <Text style={[styles.dropdownTriggerText, { color: theme.text }]}>{selected.sublabel}</Text>
+              )}
+            </>
+          ) : (
+            <Text style={[styles.dropdownTriggerText, { color: theme.textMuted }]}>{placeholder}</Text>
+          )}
+        </View>
         <Ionicons name="chevron-down" size={16} color={theme.textMuted} />
       </Pressable>
 
@@ -128,7 +133,7 @@ export default function SettingsScreen({ navigation }: any) {
   );
 
   const currencyItems: DropdownItem[] = CURRENCIES.map(c => ({ value: c.symbol, label: c.symbol, sublabel: c.name }));
-  const languageItems: DropdownItem[] = LANGUAGES.map(l => ({ value: l.code, label: `${l.flag}  ${l.label}` }));
+  const languageItems: DropdownItem[] = LANGUAGES.map(l => ({ value: l.code, label: l.flag, sublabel: l.label }));
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={['top']}>
@@ -244,6 +249,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 14, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5,
   },
+  dropdownTriggerContent: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
   dropdownTriggerText: { fontSize: 14, fontWeight: '600' },
   dropdownOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', paddingHorizontal: 32 },
   dropdownSheet: { borderRadius: 16, borderWidth: 1, overflow: 'hidden', maxHeight: 320 },

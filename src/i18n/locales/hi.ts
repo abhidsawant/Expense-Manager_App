@@ -21,6 +21,7 @@ export default {
   home: {
     title: 'खर्चे',
     empty: 'अभी कोई खर्च नहीं।\n+ दबाएं!',
+    emptySub: 'आपके खर्चे यहाँ दिखेंगे',
     greeting: 'नमस्ते {{name}} 👋',
   },
   addExpense: {

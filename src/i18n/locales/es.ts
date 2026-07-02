@@ -21,6 +21,7 @@ export default {
   home: {
     title: 'Gastos',
     empty: 'Sin gastos aún.\n¡Toca + para agregar!',
+    emptySub: 'Tus gastos aparecerán aquí',
     greeting: 'Hola {{name}} 👋',
   },
   addExpense: {
