@@ -110,6 +110,7 @@ export default function SettingsScreen({ navigation }: any) {
             expDispatch({ type: 'CLEAR' });
             catDispatch({ type: 'RESET' });
             dispatch({ type: 'UPDATE', payload: { username: '' } });
+            navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
           }),
       },
     ]);
